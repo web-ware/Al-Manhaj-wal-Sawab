@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع دحض شبهات أهل الضلال</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            background-image: linear-gradient(180deg, rgba(22, 22, 22, 1) 0%, rgba(30, 30, 30, 1) 100%);
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 900px;
+        }
+        .section-title {
+            border-right: 4px solid #34d399; /* لون أخضر فخم */
+            padding-right: 1rem;
+        }
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 35px -8px rgba(0, 0, 0, 0.4), 0 12px 12px -6px rgba(0, 0, 0, 0.2);
+        }
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #34d399;
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.3);
+        }
+        .back-button {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #34d399;
+            color: #1e1e1e;
+        }
+        
+        .image-thumbnail {
+            width: 150px; /* حجم صغير افتراضي */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .image-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .video-thumbnail-container {
+            position: relative;
+            width: 150px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .video-thumbnail-container:hover {
+            transform: scale(1.05);
+        }
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .modal-content {
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .modal-content img, .modal-content iframe {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            margin: auto;
+            border-radius: 8px;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .modal-video-container {
+            width: 80vw;
+            height: 45vw;
+            max-width: 800px;
+            max-height: 450px;
+        }
+
+        /* تنسيقات خاصة بالهاتف */
+        @media (max-width: 767px) {
+            .mobile-grid {
+                grid-template-columns: 1fr;
+            }
+            .image-thumbnail, .video-thumbnail-container {
+                width: 100%;
+                height: auto;
+            }
+            .modal-content {
+                max-width: 95%;
+                max-height: 95%;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    
+    <!-- Header -->
+    <header class="text-center mb-8 sm:mb-12">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white mb-2">موقع دحض شبهات أهل الضلال</h1>
+        <p class="text-sm sm:text-xl text-gray-400">نُورٌ على نُورٍ يَهْدِي اللهُ لِنُورِهِ مَن يَشَاءُ</p>
+    </header>
+
+    <main class="container mx-auto">
+        <!-- شريط البحث -->
+        <div class="mb-6 sm:mb-8">
+            <input type="text" id="searchInput" placeholder="ابحث عن شبهة..." class="search-input">
+        </div>
+
+        <!-- زر الرجوع (مخفي في البداية) -->
+        <button id="backButton" class="hidden back-button font-bold py-2 px-4 rounded-lg mb-6 sm:mb-8" onclick="goBack()">
+            &larr; رجوع
+        </button>
+
+        <!-- الشاشات الرئيسية للموقع -->
+        
+        <!-- شاشة الفرق (الرئيسية) -->
+        <div id="sectsView" class="view active">
+            <div id="sectsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8">
+                <!-- هنا سيتم عرض بطاقات الفرق عن طريق JavaScript -->
+            </div>
+        </div>
+
+        <!-- شاشة الشبهات (لكل فرقة) -->
+        <div id="doubtsView" class="view">
+            <h2 id="doubtsTitle" class="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-300 section-title"></h2>
+            <div id="doubtsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                <!-- هنا سيتم عرض بطاقات الشبهات عن طريق JavaScript -->
+            </div>
+        </div>
+        
+        <!-- شاشة الرد على شبهة معينة -->
+        <div id="doubtDetailsView" class="view">
+            <h2 id="doubtDetailsTitle" class="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-300 section-title"></h2>
+            <div id="doubtContent" class="card">
+                <!-- هنا سيتم عرض المحتوى الكامل للشبهة والرد عليها -->
+            </div>
+        </div>
+    </main>
+    
+    <footer class="text-center text-gray-500 mt-8 sm:mt-12 text-xs sm:text-sm">
+        <p>&copy; 2025 موقع أهل السنة. كل الحقوق محفوظة.</p>
+    </footer>
+
+    <!-- Modal للصور والفيديوهات -->
+    <div id="mediaModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-button" onclick="closeModal()">&times;</button>
+            <div id="modalContentInner"></div>
+        </div>
+    </div>
+
+    <script>
+        // تعريف المحتوى في كائن (Object) لسهولة التعديل عليه
+        const content = {
+            sects: [
+                {
+                    id: 'sufis',
+                    name: 'الصوفية',
+                    description: 'شبهات وردود على الفرق الصوفية.',
+                    doubts: [
+                        {
+                            id: 'sufi1',
+                            title: 'شبهة: جواز الاستغاثة بغير الله من الأموات',
+                            doubtText: 'يستدلون بقوله تعالى في سورة النساء: "وَلَوْ أَنَّهُمْ إِذْ ظَلَمُوا أَنْفُسَهُمْ جَاءُوكَ فَاسْتَغْفَرُوا اللَّهَ وَاسْتَغْفَرَ لَهُمُ الرَّسُولُ لَوَجَدُوا اللَّهَ تَوَّابًا رَحِيمًا" ويقولون إن هذا دليل على جواز الاستغاثة بالنبي ﷺ بعد موته.',
+                            refutation: {
+                                text: 'هذه الآية نزلت في حياة النبي ﷺ، والاستغفار كان بوجوده ﷺ، أما بعد موته فلا يصح ذلك. كما أن الاستغاثة بالأموات شرك بالله، قال تعالى: "وَأَنَّ الْمَسَاجِدَ لِلَّهِ فَلَا تَدْعُوا مَعَ اللَّهِ أَحَدًا".',
+                                images: [{ url: 'https://placehold.co/1200x800/34d399/1e1e1e?text=صورة+توضيحية', alt: 'صورة توضيحية للرد' }],
+                                videos: [{ url: 'https://www.youtube.com/embed/j_5f-c-oT1s' }],
+                                attachments: [{ name: 'تحميل كتاب "التوحيد"', url: '#' }]
+                            }
+                        },
+                        // هنا يمكنك إضافة شبهات أخرى للصوفية
+                        {
+                            id: 'sufi2',
+                            title: 'شبهة: الاحتفال بالمولد النبوي',
+                            doubtText: 'يستدلون بقوله تعالى "قُلْ بِفَضْلِ اللَّهِ وَبِرَحْمَتِهِ فَبِذَٰلِكَ فَلْيَفْرَحُوا" ويعتبرون مولد النبي ﷺ من رحمة الله فيحتفلون به.',
+                            refutation: {
+                                text: 'الاحتفال بالمولد النبوي بدعة لم يفعلها النبي ﷺ ولا صحابته الكرام. فالخير كل الخير في اتباع من سلف، والشر كل الشر في الابتداع في الدين.',
+                                images: [],
+                                videos: [],
+                                attachments: []
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'ashaira',
+                    name: 'الأشاعرة',
+                    description: 'شبهات وردود على الأشاعرة في صفات الله.',
+                    doubts: [
+                        {
+                            id: 'ashaira1',
+                            title: 'شبهة: تأويل صفات الله تعالى',
+                            doubtText: 'يقولون إن الله تعالى منزّه عن التجسيم، ولذلك يجب تأويل صفاته مثل اليد والعين والوجه، فلا تُحمل على ظاهرها بل تُفسَّر بمعانٍ مجازية مثل "قدرة" أو "نعمة" أو "ذات" خشية الوقوع في التشبيه.',
+                            refutation: {
+                                text: 'مذهب أهل السنة والجماعة هو إثبات ما أثبته الله لنفسه من الصفات أو ما أثبته له رسوله ﷺ من غير تحريف ولا تعطيل، ومن غير تكييف ولا تمثيل. فالأساس هو الإيمان بالصفات على ظاهرها اللائق بجلال الله، مع قوله تعالى "لَيْسَ كَمِثْلِهِ شَيْءٌ وَهُوَ السَّمِيعُ الْبَصِيرُ".',
+                                images: [{ url: 'https://placehold.co/1200x800/34d399/1e1e1e?text=صورة+توضيحية', alt: 'صورة توضيحية للرد' }],
+                                videos: [{ url: 'https://www.youtube.com/embed/zF4Yt0v16W0' }],
+                                attachments: [{ name: 'تحميل شرح الواسطية', url: '#' }]
+                            }
+                        },
+                        // هنا يمكنك إضافة شبهات أخرى للأشاعرة
+                        {
+                            id: 'ashaira2',
+                            title: 'شبهة: القول بأن كلام الله قديم أزلي',
+                            doubtText: 'يقولون إن كلام الله هو صفة ذاتية قديمة لا تتعلق بالمشيئة، وأن القرآن كلام الله لكنه مخلوق.',
+                            refutation: {
+                                text: 'مذهب أهل السنة والجماعة أن القرآن كلام الله غير مخلوق، وأنه يتكلم متى شاء. والقول بخلق القرآن من بدع الأشاعرة، وهو مخالفة صريحة للقرآن والسنة.',
+                                images: [],
+                                videos: [],
+                                attachments: []
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        const views = {
+            sectsView: document.getElementById('sectsView'),
+            doubtsView: document.getElementById('doubtsView'),
+            doubtDetailsView: document.getElementById('doubtDetailsView')
+        };
+        
+        const containers = {
+            sects: document.getElementById('sectsContainer'),
+            doubts: document.getElementById('doubtsContainer'),
+            doubtDetails: document.getElementById('doubtContent')
+        };
+        
+        const titles = {
+            doubts: document.getElementById('doubtsTitle'),
+            doubtDetails: document.getElementById('doubtDetailsTitle')
+        };
+
+        const backButton = document.getElementById('backButton');
+        const searchInput = document.getElementById('searchInput');
+        const mediaModal = document.getElementById('mediaModal');
+        const modalContentInner = document.getElementById('modalContentInner');
+
+        let history = []; // للتنقل بين الصفحات
+
+        // وظيفة لإخفاء كل الشاشات
+        function hideAllViews() {
+            Object.values(views).forEach(view => view.classList.remove('active'));
+            backButton.classList.add('hidden');
+        }
+
+        // وظيفة لعرض شاشة الفرق
+        function showSects() {
+            hideAllViews();
+            views.sectsView.classList.add('active');
+            containers.sects.innerHTML = '';
+            content.sects.forEach(sect => {
+                containers.sects.innerHTML += `
+                    <div class="card cursor-pointer" onclick="showDoubts('${sect.id}')">
+                        <h2 class="text-xl sm:text-2xl font-bold mb-2 text-gray-300">${sect.name}</h2>
+                        <p class="text-sm text-gray-400">${sect.description}</p>
+                    </div>
+                `;
+            });
+            history = ['sects'];
+            searchInput.value = ''; // مسح محتوى شريط البحث عند الرجوع للرئيسية
+        }
+
+        // وظيفة لعرض شاشة الشبهات الخاصة بفرقة معينة
+        function showDoubts(sectId) {
+            hideAllViews();
+            views.doubtsView.classList.add('active');
+            backButton.classList.remove('hidden');
+            containers.doubts.innerHTML = '';
+            
+            const sect = content.sects.find(s => s.id === sectId);
+            titles.doubts.innerText = sect.name;
+            
+            sect.doubts.forEach(doubt => {
+                containers.doubts.innerHTML += `
+                    <div class="card cursor-pointer" onclick="showDoubtDetails('${sectId}', '${doubt.id}')">
+                        <h3 class="text-lg sm:text-xl font-bold mb-2 text-gray-300">${doubt.title}</h3>
+                    </div>
+                `;
+            });
+            // إضافة مسار جديد لتاريخ التنقل
+            if (history[history.length - 1] !== sectId) {
+                history.push(sectId);
+            }
+        }
+
+        // وظيفة لعرض التفاصيل الكاملة لشبهة معينة
+        function showDoubtDetails(sectId, doubtId) {
+            hideAllViews();
+            views.doubtDetailsView.classList.add('active');
+            backButton.classList.remove('hidden');
+            
+            const sect = content.sects.find(s => s.id === sectId);
+            const doubt = sect.doubts.find(d => d.id === doubtId);
+            
+            titles.doubtDetails.innerText = doubt.title;
+            
+            let contentHtml = '';
+            contentHtml += `<div class="mb-4"><p class="font-bold text-red-400 mb-2">نص الشبهة:</p><p class="text-gray-300 leading-relaxed text-sm sm:text-base">${doubt.doubtText}</p></div>`;
+            contentHtml += `<div class="p-4 rounded-lg bg-[#2a2a2a]"><p class="font-bold text-green-400 mb-2">الرد على الشبهة:</p><p class="text-gray-300 leading-relaxed text-sm sm:text-base">${doubt.refutation.text}</p>`;
+
+            // عرض الصور
+            if (doubt.refutation.images.length > 0) {
+                contentHtml += `<div class="my-4"><p class="font-medium text-gray-400 mb-2">صور توضيحية:</p><div class="flex flex-wrap gap-4">`;
+                doubt.refutation.images.forEach(img => {
+                    contentHtml += `<img src="${img.url}" alt="${img.alt}" class="image-thumbnail" onclick="openModal('${img.url}', 'image')">`;
+                });
+                contentHtml += `</div></div>`;
+            }
+
+            // عرض الفيديوهات
+            if (doubt.refutation.videos.length > 0) {
+                contentHtml += `<div class="my-4"><p class="font-medium text-gray-400 mb-2">فيديو للرد:</p><div class="flex flex-wrap gap-4">`;
+                doubt.refutation.videos.forEach(video => {
+                    const videoId = video.url.split('/').pop();
+                    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                    const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    contentHtml += `<div class="video-thumbnail-container" onclick="openModal('${videoUrl}', 'video')"><img src="${thumbnailUrl}" alt="فيديو للرد" class="video-thumbnail"><span class="play-icon">&#9654;</span></div>`;
+                });
+                contentHtml += `</div></div>`;
+            }
+
+            if (doubt.refutation.attachments.length > 0) {
+                contentHtml += `<div><p class="font-medium text-gray-400 mb-2">ملفات ملحقة:</p>`;
+                doubt.refutation.attachments.forEach(attachment => {
+                    contentHtml += `<a href="${attachment.url}" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200">${attachment.name}</a>`;
+                });
+                contentHtml += `</div>`;
+            }
+
+            contentHtml += `</div>`;
+            containers.doubtDetails.innerHTML = contentHtml;
+            
+            // إضافة مسار جديد لتاريخ التنقل
+            if (history[history.length - 1] !== doubtId) {
+                history.push(doubtId);
+            }
+        }
+
+        // وظيفة الرجوع
+        function goBack() {
+            if (history.length > 1) {
+                history.pop();
+                const lastView = history[history.length - 1];
+                if (lastView === 'sects') {
+                    showSects();
+                } else if (lastView === 'search_results') {
+                    // هذا هو التعديل، عند الرجوع من البحث نرجع للصفحة الرئيسية
+                    showSects();
+                } else {
+                    showDoubts(lastView);
+                }
+            }
+        }
+        
+        // وظيفة البحث
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            if (query.length > 0) {
+                hideAllViews();
+                views.doubtsView.classList.add('active');
+                backButton.classList.remove('hidden');
+                titles.doubts.innerText = 'نتائج البحث';
+                containers.doubts.innerHTML = '';
+                
+                let foundResults = false;
+                content.sects.forEach(sect => {
+                    sect.doubts.forEach(doubt => {
+                        const allText = `${doubt.title} ${doubt.doubtText} ${doubt.refutation.text}`.toLowerCase();
+                        if (allText.includes(query)) {
+                            containers.doubts.innerHTML += `
+                                <div class="card cursor-pointer" onclick="showDoubtDetails('${sect.id}', '${doubt.id}')">
+                                    <h3 class="text-lg sm:text-xl font-bold mb-2 text-gray-300">${doubt.title}</h3>
+                                    <p class="text-xs text-gray-500">${sect.name}</p>
+                                </div>
+                            `;
+                            foundResults = true;
+                        }
+                    });
+                });
+                if (!foundResults) {
+                    containers.doubts.innerHTML = '<p class="text-gray-600 text-center">لم يتم العثور على أي نتائج.</p>';
+                }
+                history = ['sects', 'search_results']; // تم تعديل هذا السطر
+            } else {
+                showSects(); // العودة للشاشة الرئيسية
+            }
+        });
+
+        // Modal Functions
+        function openModal(source, type) {
+            modalContentInner.innerHTML = ''; // Clear previous content
+            if (type === 'image') {
+                modalContentInner.innerHTML = `<img src="${source}" alt="صورة مكبرة">`;
+            } else if (type === 'video') {
+                modalContentInner.innerHTML = `<div class="modal-video-container"><iframe class="w-full h-full" src="${source}" frameborder="0" allowfullscreen></iframe></div>`;
+            }
+            mediaModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            mediaModal.style.display = 'none';
+            // Stop video playback when closing the modal
+            modalContentInner.innerHTML = '';
+        }
+        
+        // عند تحميل الصفحة، ابدأ بعرض شاشة الفرق
+        window.onload = showSects;
+    </script>
+</body>
+</html>
